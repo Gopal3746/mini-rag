@@ -1,0 +1,55 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rag-ingest"
+version = "0.1.0"
+description = "A compact RAG ingestion, retrieval, and evaluation stack using pgvector, Celery, LangChain, and MLflow."
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+authors = [{name = "Gopal Kamineni"}]
+dependencies = [
+  "celery[redis]>=5.6,<6",
+  "fastapi>=0.116,<1",
+  "langchain-core>=1.0,<2",
+  "langchain-huggingface>=1.0,<2",
+  "langchain-openai>=1.0,<2",
+  "langchain-text-splitters>=1.0,<2",
+  "mlflow>=3.0,<4",
+  "pgvector>=0.4,<1",
+  "pandas>=2.2,<3",
+  "psycopg[binary]>=3.2,<4",
+  "pydantic-settings>=2.10,<3",
+  "pyyaml>=6.0,<7",
+  "sentence-transformers>=5.0,<6",
+  "sqlalchemy>=2.0,<3",
+  "typer>=0.16,<1",
+  "uvicorn[standard]>=0.35,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "httpx>=0.28,<1",
+  "pytest>=8.4,<9",
+  "pytest-cov>=6.2,<7",
+  "ruff>=0.12,<1",
+]
+
+[project.scripts]
+rag-ingest = "rag_ingest.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rag_ingest"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
