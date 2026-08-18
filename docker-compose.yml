@@ -1,0 +1,93 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-rag}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-rag}
+      POSTGRES_DB: ${POSTGRES_DB:-rag}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-rag} -d ${POSTGRES_DB:-rag}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  mlflow:
+    build: .
+    command: >-
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --allowed-hosts "mlflow:5000,localhost:*,127.0.0.1:*" 
+      --backend-store-uri sqlite:////mlflow/mlflow.db
+      --default-artifact-root /mlflow/artifacts
+    ports:
+      - "5001:5000"
+    volumes:
+      - mlflow_data:/mlflow
+
+  api:
+    build: .
+    command: uvicorn rag_ingest.api:app --host 0.0.0.0 --port 8000 --reload
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-rag}:${POSTGRES_PASSWORD:-rag}@postgres:5432/${POSTGRES_DB:-rag}
+      REDIS_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      PROMPT_DIR: /app/prompts
+      INGEST_ROOT: /data
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
+      - ./prompts:/app/prompts:ro
+      - ./sample_docs:/data/sample_docs:ro
+      - ./data:/data/user_docs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mlflow:
+        condition: service_started
+
+  worker:
+    build: .
+    command: celery -A rag_ingest.celery_app:celery worker --loglevel=INFO --concurrency=2
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-rag}:${POSTGRES_PASSWORD:-rag}@postgres:5432/${POSTGRES_DB:-rag}
+      REDIS_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      PROMPT_DIR: /app/prompts
+      INGEST_ROOT: /data
+    volumes:
+      - ./src:/app/src
+      - ./prompts:/app/prompts:ro
+      - ./sample_docs:/data/sample_docs:ro
+      - ./data:/data/user_docs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  pg_data:
+  mlflow_data:
