@@ -1,0 +1,31 @@
+documents_path: /data/sample_docs
+eval_path: /app/eval/relevance.jsonl
+
+experiments:
+  - name: minilm-small-chunks-v1
+    embedding_model: sentence-transformers/all-MiniLM-L6-v2
+    chunk_size: 350
+    chunk_overlap: 60
+    k: 5
+    prompt_version: v1
+
+  - name: minilm-medium-chunks-v2
+    embedding_model: sentence-transformers/all-MiniLM-L6-v2
+    chunk_size: 600
+    chunk_overlap: 100
+    k: 5
+    prompt_version: v2
+
+  - name: bge-medium-chunks-v2
+    embedding_model: BAAI/bge-small-en-v1.5
+    chunk_size: 600
+    chunk_overlap: 100
+    k: 5
+    prompt_version: v2
+
+  - name: bge-large-chunks-v2
+    embedding_model: BAAI/bge-small-en-v1.5
+    chunk_size: 900
+    chunk_overlap: 150
+    k: 5
+    prompt_version: v2

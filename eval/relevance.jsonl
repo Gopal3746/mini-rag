@@ -1,0 +1,12 @@
+{"query": "How long are daily production database backups retained?", "relevant_sources": ["/data/sample_docs/01_backups.md"]}
+{"query": "What happens when an API client exceeds its request quota?", "relevant_sources": ["/data/sample_docs/05_api_limits.md"]}
+{"query": "How quickly must the primary on-call acknowledge a page?", "relevant_sources": ["/data/sample_docs/09_oncall.md"]}
+{"query": "What metrics are used to evaluate retrieval quality?", "relevant_sources": ["/data/sample_docs/15_rag_quality.md", "/data/sample_docs/16_mlflow.md"]}
+{"query": "Where are prompts stored and how are prompt changes versioned?", "relevant_sources": ["/data/sample_docs/17_prompting.md"]}
+{"query": "What are the RTO and RPO for the query service?", "relevant_sources": ["/data/sample_docs/11_dr.md"]}
+{"query": "Can secrets be committed into source control?", "relevant_sources": ["/data/sample_docs/10_security.md"]}
+{"query": "What is the rollout order for production canaries?", "relevant_sources": ["/data/sample_docs/04_deployments.md"]}
+{"query": "How soon is deleted customer application data removed?", "relevant_sources": ["/data/sample_docs/06_data_retention.md"]}
+{"query": "Why should background jobs be idempotent?", "relevant_sources": ["/data/sample_docs/14_celery.md"]}
+{"query": "What document formats can the ingestion service accept?", "relevant_sources": ["/data/sample_docs/18_ingestion.md"]}
+{"query": "What is the query API availability objective?", "relevant_sources": ["/data/sample_docs/08_slo.md"]}
