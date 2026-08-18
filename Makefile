@@ -17,7 +17,7 @@ test:
 	docker compose run --rm --no-deps api pytest /app/tests
 
 lint:
-	docker compose run --rm --no-deps api ruff check /app/src /app/tests
+	docker compose run --rm --no-deps api ruff check /app/src /app/tests /app/scripts
 
 verify:
 	python3 scripts/verify_project.py
